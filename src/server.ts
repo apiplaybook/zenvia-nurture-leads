@@ -1,5 +1,6 @@
 import express, { Request, Response, json } from 'express'
 import { saveLead } from './functions/saveLead'
+import { getLeads } from './functions/getLeads'
 
 // Inicializa o express e define uma porta
 const app = express()
@@ -35,6 +36,15 @@ app.post('/lead', async (request: Request, response: Response) => {
 		} catch (error) {
 			response.status(500).end() // Responde quem solicitou nosso webhook com status 500 de erro
 		}
+	}
+})
+
+app.get('/leads', async (request: Request, response: Response) => {
+	try {
+		const allLeads = await getLeads() // Chama a função que busca os Leads no banco de dados
+		response.status(200).json(allLeads) // Responde quem solicitou nosso webhook com status 200
+	} catch (error) {
+		response.status(500).end() // Responde quem solicitou nosso webhook com status 500 de erro
 	}
 })
 
