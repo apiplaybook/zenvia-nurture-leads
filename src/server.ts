@@ -1,6 +1,8 @@
 import express, { Request, Response, json } from 'express'
 import { saveLead } from './functions/saveLead'
 import { getLeads } from './functions/getLeads'
+import { nurtureLeadsWithoutMessage } from './functions/nurtureLeadsWithoutMessage'
+import { nurtureLeadsWithMessage } from './functions/nurtureLeadsWithMessage'
 
 // Inicializa o express e define uma porta
 const app = express()
@@ -43,6 +45,30 @@ app.get('/leads', async (request: Request, response: Response) => {
 	try {
 		const allLeads = await getLeads() // Chama a função que busca os Leads no banco de dados
 		response.status(200).json(allLeads) // Responde quem solicitou nosso webhook com status 200
+	} catch (error) {
+		response.status(500).end() // Responde quem solicitou nosso webhook com status 500 de erro
+	}
+})
+
+app.post('/sendMailToLeadsWithoutMessage', async (request: Request, response: Response) => {
+	try {
+		const { from } = request.body // Armazena as informações vindas no corpo da requisição em variáveos
+
+		await nurtureLeadsWithoutMessage(from) // Chama a função que envia os e-mails
+
+		response.status(200).send() // Responde quem solicitou nosso webhook com status 200
+	} catch (error) {
+		response.status(500).end() // Responde quem solicitou nosso webhook com status 500 de erro
+	}
+})
+
+app.post('/sendMailToLeadsWithMessage', async (request: Request, response: Response) => {
+	try {
+		const { from } = request.body // Armazena as informações vindas no corpo da requisição em variáveos
+
+		await nurtureLeadsWithMessage(from) // Chama a função que envia os e-mails
+
+		response.status(200).send() // Responde quem solicitou nosso webhook com status 200
 	} catch (error) {
 		response.status(500).end() // Responde quem solicitou nosso webhook com status 500 de erro
 	}
